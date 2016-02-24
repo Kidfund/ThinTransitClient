@@ -47,11 +47,23 @@ class TransportClient
      */
     public function encrypt($key , $plaintext, $context = null) {
         $url = '/transit/encrypt/' . $key;
+
+        Log::debug("Encrypting");
+        Log::debug([
+            "key" => $key,
+            "plaintext" => $plaintext,
+            "context" => $context,
+        ]);
+
         $encoded = base64_encode($plaintext);
+
+        Log::debug("encoded: $encoded");
 
         $data = ['plaintext' => $encoded];
 
-        Log::debug('encoding ' . $key . ':' . $plaintext . ' as' . $encoded . "\n");
+        Log::debug('Enc ' . $key . ':' . $plaintext . ' as' . $encoded . "\n");
+
+
 
         if ($context) {
             $encodedContext = base64_encode($context);
@@ -68,6 +80,14 @@ class TransportClient
      * @return string
      */
     public function decrypt($path, $cyphertext, $context = null) {
+
+        Log::debug("Decrypting");
+        Log::debug([
+            "path" => $path,
+            "cyphertext" => $cyphertext,
+            "context" => $context
+        ]);
+
         $url = '/transit/decrypt/' . $path;
         $data = ['ciphertext' => $cyphertext];
 
@@ -76,7 +96,15 @@ class TransportClient
             $data['context'] = $encodedContext;
         }
 
-        return base64_decode($this->command($url, 'POST', json_encode($data))['data']['plaintext']);
+        $encoded = $this->command($url, 'POST', json_encode($data))['data']['plaintext'];
+
+        Log::debug("Encoded: $encoded");
+
+        $plaintext = base64_decode($encoded);
+
+        Log::debug("Plaintext: $plaintext");
+
+        return $plaintext;
 
     }
 
