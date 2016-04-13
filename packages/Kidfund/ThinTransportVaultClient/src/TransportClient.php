@@ -26,16 +26,18 @@ class TransportClient
      * }
      *
      * also see vault.policy.web.json.example
+     * @param null $guzzleClient
      *
      */
-    public function __construct($serverUrl, $token)
+
+    public function __construct($serverUrl, $token, $guzzleClient = null)
     {
         $this->serverUrl = $serverUrl;
         $this->token = $token;
 
         $this->client = new Client([
             'base_uri' => $this->serverUrl,
-            'timeout'  => 2.0
+            'timeout' => 2.0
         ]);
     }
 
@@ -45,7 +47,8 @@ class TransportClient
      * @param null $context
      * @return mixed
      */
-    public function encrypt($key , $plaintext, $context = null) {
+    public function encrypt($key, $plaintext, $context = null)
+    {
         $url = '/transit/encrypt/' . $key;
 
         Log::debug("Encrypting");
@@ -64,7 +67,6 @@ class TransportClient
         Log::debug('Enc ' . $key . ':' . $plaintext . ' as' . $encoded . "\n");
 
 
-
         if ($context) {
             $encodedContext = base64_encode($context);
             $data['context'] = $encodedContext;
@@ -79,7 +81,8 @@ class TransportClient
      * @param null $context
      * @return string
      */
-    public function decrypt($path, $cyphertext, $context = null) {
+    public function decrypt($path, $cyphertext, $context = null)
+    {
 
         Log::debug("Decrypting");
         Log::debug([
@@ -115,13 +118,14 @@ class TransportClient
      * @return mixed
      * @throws GuzzleHttp\Exception\ClientException
      */
-    private function command($url, $method = 'POST', $payload = []) {
+    private function command($url, $method = 'POST', $payload = [])
+    {
         Log::debug($payload);
 
         $response = $this->client->request($method, 'v1' . $url, [
             'headers' => [
                 'X-Vault-Token' => $this->token,
-                'Content-Type'  => 'application/json'
+                'Content-Type' => 'application/json'
             ],
             'body' => $payload
         ]);
