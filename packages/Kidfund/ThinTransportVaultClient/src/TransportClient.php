@@ -3,6 +3,7 @@
 namespace Kidfund\ThinTransportVaultClient;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 use Log;
 
 class TransportClient
@@ -26,19 +27,23 @@ class TransportClient
      * }
      *
      * also see vault.policy.web.json.example
-     * @param null $guzzleClient
+     * @param null $client
      *
      */
 
-    public function __construct($serverUrl, $token, $guzzleClient = null)
+    public function __construct($serverUrl, $token, ClientInterface $client = null)
     {
         $this->serverUrl = $serverUrl;
         $this->token = $token;
+        if ($client == null) {
+            $this->client = new Client([
+                'base_uri' => $this->serverUrl,
+                'timeout' => 2.0
+            ]);
+        } else {
+            $this->client = $client;
+        }
 
-        $this->client = new Client([
-            'base_uri' => $this->serverUrl,
-            'timeout' => 2.0
-        ]);
     }
 
     /**
@@ -46,9 +51,20 @@ class TransportClient
      * @param $plaintext
      * @param null $context
      * @return mixed
+     * @throws StringException
      */
     public function encrypt($key, $plaintext, $context = null)
     {
+        if (!is_string($key)) {
+            throw new StringException("\$key must be a string");
+        }
+        if (!is_string($plaintext)) {
+            throw new StringException("\$plaintext must be a string");
+        }
+        if ($context !== null && !is_string($context)) {
+            throw new StringException("\$context must be a string");
+        }
+
         $url = '/transit/encrypt/' . $key;
 
         Log::debug("Encrypting");
@@ -58,7 +74,22 @@ class TransportClient
             "context" => $context,
         ]);
 
-        $encoded = base64_encode($plaintext);
+        $data = $this->getEncryptPayload($key, $plaintext, $context);
+
+        $response = $this->command($url, 'POST', $data);
+
+        return $response['data']['ciphertext'];
+    }
+
+    /**
+     * @param $key
+     * @param $plaintext
+     * @param null $context
+     * @return array
+     */
+    protected function getEncryptPayload($key, $plaintext, $context = null)
+    {
+        $encoded = $this->encode($plaintext);
 
         Log::debug("encoded: $encoded");
 
@@ -68,21 +99,50 @@ class TransportClient
 
 
         if ($context) {
-            $encodedContext = base64_encode($context);
+            $encodedContext = $this->encode($context);
             $data['context'] = $encodedContext;
         }
 
-        return $this->command($url, 'POST', json_encode($data))['data']['ciphertext'];
+        return $data;
     }
+
+    /**
+     * @param $string
+     * @return mixed
+     */
+    protected function encode($string)
+    {
+        return base64_encode($string);
+    }
+
+    /**
+     * @param $base64
+     * @return mixed
+     */
+    protected function decode($base64)
+    {
+        return base64_decode($base64);
+    }
+
 
     /**
      * @param $path
      * @param $cyphertext
      * @param null $context
-     * @return string
+     * @return mixed
+     * @throws StringException
      */
     public function decrypt($path, $cyphertext, $context = null)
     {
+        if (!is_string($path)) {
+            throw new StringException("\$path must be a string");
+        }
+        if (!is_string($cyphertext)) {
+            throw new StringException("\$cyphertext must be a string");
+        }
+        if ($context !== null && !is_string($context)) {
+            throw new StringException("\$context must be a string");
+        }
 
         Log::debug("Decrypting");
         Log::debug([
@@ -92,23 +152,43 @@ class TransportClient
         ]);
 
         $url = '/transit/decrypt/' . $path;
-        $data = ['ciphertext' => $cyphertext];
+        $data = $this->getDecryptPayload($cyphertext, $context);
 
-        if ($context) {
-            $encodedContext = base64_encode($context);
-            $data['context'] = $encodedContext;
-        }
+        $response = $this->command($url, 'POST', $data);
 
-        $encoded = $this->command($url, 'POST', json_encode($data))['data']['plaintext'];
+        $encoded = $response['data']['plaintext'];
 
         Log::debug("Encoded: $encoded");
 
-        $plaintext = base64_decode($encoded);
+        $plaintext = $this->decode($encoded);
 
         Log::debug("Plaintext: $plaintext");
 
         return $plaintext;
+    }
 
+    protected function getDecryptPayload($cyphertext, $context = null)
+    {
+        $data = ['ciphertext' => $cyphertext];
+
+        if ($context) {
+            $encodedContext = $this->encode($context);
+            $data['context'] = $encodedContext;
+        }
+
+        return $data;
+    }
+
+    protected function getCommandPayload($payload)
+    {
+        $json = json_encode($payload);
+        return [
+            'headers' => [
+                'X-Vault-Token' => $this->token,
+                'Content-Type' => 'application/json'
+            ],
+            'body' => $payload
+        ];
     }
 
     /**
@@ -123,13 +203,14 @@ class TransportClient
         Log::debug($payload);
 
         $response = $this->client->request($method, 'v1' . $url, [
-            'headers' => [
-                'X-Vault-Token' => $this->token,
-                'Content-Type' => 'application/json'
-            ],
-            'body' => $payload
+            $this->getCommandPayload($payload)
         ]);
 
+        return $this->parseResponse($response);
+    }
+
+    private function parseResponse($response)
+    {
         return json_decode($response->getBody(), true);
     }
 }
