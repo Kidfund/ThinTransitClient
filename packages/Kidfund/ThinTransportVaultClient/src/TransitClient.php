@@ -4,9 +4,10 @@ namespace Kidfund\ThinTransportVaultClient;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\ConnectException;
 use Log;
 
-class TransportClient
+class TransitClient
 {
 
     private $serverUrl;
@@ -52,6 +53,8 @@ class TransportClient
      * @param null $context
      * @return mixed
      * @throws StringException
+     *
+     * TODO PHP7 scalar type hinting
      */
     public function encrypt($key, $plaintext, $context = null)
     {
@@ -77,6 +80,18 @@ class TransportClient
         $data = $this->getEncryptPayload($key, $plaintext, $context);
 
         $response = $this->command($url, 'POST', $data);
+
+        if ($response == null) {
+            throw new VaultException("Empty response from Vault server");
+        }
+
+        if (!array_key_exists('data', $response)) {
+            throw new VaultException("Vault Encrypt: data not returned");
+        }
+
+        if (!array_key_exists('ciphertext', $response['data'])) {
+            throw new VaultException("Vault Encrypt: ciphertext not returned");
+        }
 
         return $response['data']['ciphertext'];
     }
@@ -131,6 +146,8 @@ class TransportClient
      * @param null $context
      * @return mixed
      * @throws StringException
+     *
+     * TODO PHP7 scalar type hinting
      */
     public function decrypt($path, $cyphertext, $context = null)
     {
@@ -182,13 +199,15 @@ class TransportClient
     protected function getCommandPayload($payload)
     {
         $json = json_encode($payload);
-        return [
+        $payload = [
             'headers' => [
                 'X-Vault-Token' => $this->token,
                 'Content-Type' => 'application/json'
             ],
-            'body' => $payload
+            'json' => $payload
         ];
+
+        return $payload;
     }
 
     /**
@@ -202,9 +221,9 @@ class TransportClient
     {
         Log::debug($payload);
 
-        $response = $this->client->request($method, 'v1' . $url, [
+        $response = $this->client->request($method, 'v1' . $url,
             $this->getCommandPayload($payload)
-        ]);
+        );
 
         return $this->parseResponse($response);
     }
