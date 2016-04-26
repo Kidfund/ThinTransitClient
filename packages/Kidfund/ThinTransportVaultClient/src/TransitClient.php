@@ -16,7 +16,7 @@ class TransitClient
 
     /**
      * TransportClient constructor.
-     * @param string $serverUrl The vault server E.G. http://192.168.10.10:8200
+     * @param string $serverUrl The vault server E.G. http://192.168.20.20:8200
      * @param string $token Token with the following (or more granular) access:
      *
      * path "transit/decrypt/*" {
