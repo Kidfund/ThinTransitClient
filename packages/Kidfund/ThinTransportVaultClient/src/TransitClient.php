@@ -4,12 +4,10 @@ namespace Kidfund\ThinTransportVaultClient;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\ConnectException;
 use Log;
 
 class TransitClient
 {
-
     private $serverUrl;
     private $token;
     private $client;
@@ -29,9 +27,7 @@ class TransitClient
      *
      * also see vault.policy.web.json.example
      * @param null $client
-     *
      */
-
     public function __construct($serverUrl, $token, ClientInterface $client = null)
     {
         $this->serverUrl = $serverUrl;
@@ -39,12 +35,11 @@ class TransitClient
         if ($client == null) {
             $this->client = new Client([
                 'base_uri' => $this->serverUrl,
-                'timeout' => 2.0
+                'timeout' => 2.0,
             ]);
         } else {
             $this->client = $client;
         }
-
     }
 
     /**
@@ -59,22 +54,22 @@ class TransitClient
     public function encrypt($key, $plaintext, $context = null)
     {
         if (!is_string($key)) {
-            throw new StringException("\$key must be a string");
+            throw new StringException('$key must be a string');
         }
         if (!is_string($plaintext)) {
-            throw new StringException("\$plaintext must be a string");
+            throw new StringException('$plaintext must be a string');
         }
         if ($context !== null && !is_string($context)) {
-            throw new StringException("\$context must be a string");
+            throw new StringException('$context must be a string');
         }
 
-        $url = '/transit/encrypt/' . $key;
+        $url = '/transit/encrypt/'.$key;
 
-        Log::debug("Encrypting");
+        Log::debug('Encrypting');
         Log::debug([
-            "key" => $key,
-            "plaintext" => $plaintext,
-            "context" => $context,
+            'key' => $key,
+            'plaintext' => $plaintext,
+            'context' => $context,
         ]);
 
         $data = $this->getEncryptPayload($key, $plaintext, $context);
@@ -82,15 +77,15 @@ class TransitClient
         $response = $this->command($url, 'POST', $data);
 
         if ($response == null) {
-            throw new VaultException("Empty response from Vault server");
+            throw new VaultException('Empty response from Vault server');
         }
 
         if (!array_key_exists('data', $response)) {
-            throw new VaultException("Vault Encrypt: data not returned");
+            throw new VaultException('Vault Encrypt: data not returned');
         }
 
         if (!array_key_exists('ciphertext', $response['data'])) {
-            throw new VaultException("Vault Encrypt: ciphertext not returned");
+            throw new VaultException('Vault Encrypt: ciphertext not returned');
         }
 
         return $response['data']['ciphertext'];
@@ -110,7 +105,7 @@ class TransitClient
 
         $data = ['plaintext' => $encoded];
 
-        Log::debug('Enc ' . $key . ':' . $plaintext . ' as' . $encoded . "\n");
+        Log::debug('Enc '.$key.':'.$plaintext.' as'.$encoded."\n");
 
 
         if ($context) {
@@ -139,7 +134,6 @@ class TransitClient
         return base64_decode($base64);
     }
 
-
     /**
      * @param $path
      * @param $cyphertext
@@ -152,23 +146,23 @@ class TransitClient
     public function decrypt($path, $cyphertext, $context = null)
     {
         if (!is_string($path)) {
-            throw new StringException("\$path must be a string");
+            throw new StringException('$path must be a string');
         }
         if (!is_string($cyphertext)) {
-            throw new StringException("\$cyphertext must be a string");
+            throw new StringException('$cyphertext must be a string');
         }
         if ($context !== null && !is_string($context)) {
-            throw new StringException("\$context must be a string");
+            throw new StringException('$context must be a string');
         }
 
-        Log::debug("Decrypting");
+        Log::debug('Decrypting');
         Log::debug([
-            "path" => $path,
-            "cyphertext" => $cyphertext,
-            "context" => $context
+            'path' => $path,
+            'cyphertext' => $cyphertext,
+            'context' => $context,
         ]);
 
-        $url = '/transit/decrypt/' . $path;
+        $url = '/transit/decrypt/'.$path;
         $data = $this->getDecryptPayload($cyphertext, $context);
 
         $response = $this->command($url, 'POST', $data);
@@ -202,9 +196,9 @@ class TransitClient
         $payload = [
             'headers' => [
                 'X-Vault-Token' => $this->token,
-                'Content-Type' => 'application/json'
+                'Content-Type' => 'application/json',
             ],
-            'json' => $payload
+            'json' => $payload,
         ];
 
         return $payload;
@@ -221,7 +215,7 @@ class TransitClient
     {
         Log::debug($payload);
 
-        $response = $this->client->request($method, 'v1' . $url,
+        $response = $this->client->request($method, 'v1'.$url,
             $this->getCommandPayload($payload)
         );
 
