@@ -35,7 +35,7 @@ class TransitClient
         if ($client == null) {
             $this->client = new Client([
                 'base_uri' => $this->serverUrl,
-                'timeout' => 2.0,
+                'timeout' => 5.0,
             ]);
         } else {
             $this->client = $client;
