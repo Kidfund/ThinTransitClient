@@ -217,7 +217,7 @@ class TransitClient
         Log::debug($payload);
 
         try {
-            $response = $this->client->request($method, 'v1' . $url,
+            $response = $this->client->request($method, 'v1'.$url,
                 $this->getCommandPayload($payload)
             );
         } catch (ServerException $e) {
