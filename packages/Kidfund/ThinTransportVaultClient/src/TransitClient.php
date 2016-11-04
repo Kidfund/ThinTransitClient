@@ -4,6 +4,7 @@ namespace Kidfund\ThinTransportVaultClient;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\ServerException;
 use Log;
 
 class TransitClient
@@ -209,15 +210,22 @@ class TransitClient
      * @param string $method
      * @param array $payload
      * @return mixed
-     * @throws GuzzleHttp\Exception\ClientException
+     * @throws VaultException
      */
     private function command($url, $method = 'POST', $payload = [])
     {
         Log::debug($payload);
 
-        $response = $this->client->request($method, 'v1'.$url,
-            $this->getCommandPayload($payload)
-        );
+        try {
+            $response = $this->client->request($method, 'v1' . $url,
+                $this->getCommandPayload($payload)
+            );
+        } catch (ServerException $e) {
+            $exceptionResponse = $e->getResponse();
+            $reasonPhrase = $exceptionResponse->getReasonPhrase();
+            $statusCode = $exceptionResponse->getStatusCode();
+            throw new VaultException($reasonPhrase, $statusCode);
+        }
 
         return $this->parseResponse($response);
     }
