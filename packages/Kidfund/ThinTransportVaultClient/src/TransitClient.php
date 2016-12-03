@@ -2,10 +2,10 @@
 
 namespace Kidfund\ThinTransportVaultClient;
 
+use Log;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\ServerException;
-use Log;
 
 class TransitClient
 {
@@ -107,7 +107,6 @@ class TransitClient
         $data = ['plaintext' => $encoded];
 
         Log::debug('Enc '.$key.':'.$plaintext.' as'.$encoded."\n");
-
 
         if ($context) {
             $encodedContext = $this->encode($context);
