@@ -7,7 +7,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\ServerException;
 
-class TransitClient
+class TransitClient implements VaultEncrypts
 {
     private $serverUrl;
     private $token;
