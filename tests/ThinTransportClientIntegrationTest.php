@@ -1,26 +1,27 @@
 <?php
-use GuzzleHttp\Client;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Psr7\Response;
+
+use \Illuminate\Container\Container as Container;
+use \Illuminate\Support\Facades\Facade as Facade;
 use Kidfund\ThinTransportVaultClient\TransitClient;
+use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
  * @author: timbroder
  * Date: 4/13/16
- * @copyright 2015 Kidfund Inc
+ * @copyright 2018 Kidfund Inc
  */
 class ThinTransitClientIntegrationTest extends TestCase
 {
     // TODO provide setup instructions to run vault
 
+    const VAULT_ADDR='http://kidfund-dev-web.app:8200';
+    const VAULT_TOKEN='6a4a2fd1-0d72-40a3-74f1-0b303e943fda';
+    const VAULT_ROOT_TOKEN = 'ec25daef14e-3bfb81d9-c695-8a8b-2d27';
     const VAULTTEST_PREFIX = 'thingtransport_test';
     const VALID_STRING = 'the quick brown fox';
     const VAULT_PREFIX = 'vault:v1:';
-
-    public $VAULT_ADDR;
-    public $VAULT_TOKEN;
-    public $VAULT_ROOT_TOKEN;
 
     /**
      * Get env variables. these are set in phpunit.xml or can be overridden on the CLI
@@ -28,9 +29,15 @@ class ThinTransitClientIntegrationTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $this->VAULT_ADDR = getenv('VAULT_ADDR');
-        $this->VAULT_TOKEN = getenv('VAULT_TOKEN');
-        $this->VAULT_ROOT_TOKEN = getenv('VAULT_ROOT_TOKEN');
+
+        $app = new Container();
+        $app->singleton('app', Container::class);
+        $app->bind(LoggerInterface::class, function($app)
+        {
+            return new NullLogger();
+        });
+
+        Facade::setFacadeApplication($app);
     }
 
     /**
@@ -41,13 +48,13 @@ class ThinTransitClientIntegrationTest extends TestCase
     public function getRealVaultClient($root = false, $addr = null)
     {
         if ($root) {
-            $token = $this->VAULT_ROOT_TOKEN;
+            $token = self::VAULT_ROOT_TOKEN;
         } else {
-            $token = $this->VAULT_TOKEN;
+            $token = self::VAULT_TOKEN;
         }
 
         if ($addr == null) {
-            $addr = $this->VAULT_ADDR;
+            $addr = self::VAULT_ADDR;
         }
         return new TransitClient($addr, $token);
     }
@@ -55,9 +62,11 @@ class ThinTransitClientIntegrationTest extends TestCase
     /**
      * @param $plaintext
      * @param null $client
+     *
      * @return mixed
      * @throws \Kidfund\ThinTransportVaultClient\StringException
-     * @throws \Kidfund\ThinTransportVaultClient\VaultException
+     * @throws \Kidfund\ThinTransportVaultClient\VaultException*
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function getEncryptResponse($plaintext, $client = null)
     {
@@ -73,8 +82,11 @@ class ThinTransitClientIntegrationTest extends TestCase
     /**
      * @param $ciphertext
      * @param null $client
+     *
      * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Kidfund\ThinTransportVaultClient\StringException
+     * @throws \Kidfund\ThinTransportVaultClient\VaultException
      */
     public function getDecryptResponse($ciphertext, $client = null)
     {
@@ -113,30 +125,30 @@ class ThinTransitClientIntegrationTest extends TestCase
         $this->getEncryptResponse($this::VALID_STRING, $client);
     }
 
-    /**
-     * @test
-     * @group VaultEndToEnd
-     * @group EndToEnd
-     */
-    public function it_encrypts_something()
-    {
-        $response = $this->getEncryptResponse($this::VALID_STRING);
-        $this->assertContains($this::VAULT_PREFIX, $response);
-    }
-
-    /**
-     * @test
-     * @group VaultEndToEnd
-     * @group EndToEnd
-     */
-    public function it_decrypts_something()
-    {
-        $client = $this->getRealVaultClient();
-        $ciphertext = $this->getEncryptResponse($this::VALID_STRING, $client);
-        unset($client);
-        $client = $this->getRealVaultClient();
-        $response = $this->getDecryptResponse($ciphertext, $client);
-        
-        $this->assertContains($this::VALID_STRING, $response);
-    }
+//    /**
+//     * @test
+//     * @group VaultEndToEnd
+//     * @group EndToEnd
+//     */
+//    public function it_encrypts_something()
+//    {
+//        $response = $this->getEncryptResponse($this::VALID_STRING);
+//        $this->assertContains($this::VAULT_PREFIX, $response);
+//    }
+//
+//    /**
+//     * @test
+//     * @group VaultEndToEnd
+//     * @group EndToEnd
+//     */
+//    public function it_decrypts_something()
+//    {
+//        $client = $this->getRealVaultClient();
+//        $ciphertext = $this->getEncryptResponse($this::VALID_STRING, $client);
+//        unset($client);
+//        $client = $this->getRealVaultClient();
+//        $response = $this->getDecryptResponse($ciphertext, $client);
+//
+//        $this->assertContains($this::VALID_STRING, $response);
+//    }
 }

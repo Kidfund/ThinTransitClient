@@ -3,15 +3,21 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
+use Kidfund\MonkeyPatcher\MonkeyPatcher;
 use Kidfund\ThinTransportVaultClient\TransitClient;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @author: timbroder
  * Date: 4/13/16
- * @copyright 2015 Kidfund Inc
+ * @copyright 2018 Kidfund Inc
  */
 class ThinTransitClientUnitTest extends TestCase
 {
+    use MonkeyPatcher;
+
+    const VAULT_ADDR = 'http://192.168.20.20:8200';
+    const VAULT_TOKEN = '3bfb81d9-c695-8a8b-2d27-ec25daef14e';
     const ENCRYPTED_VALUE = "vault:v1:UEhQVW5pdF9GcmFtZXdvcmtfTW9ja09iamVjdF9Nb2NrT2JqZWN0";
     const VALID_STRING = 'the quick brown fox';
     const ENCODED_VALID_STRING = 'dGhlIHF1aWNrIGJyb3duIGZveA==';
@@ -33,18 +39,18 @@ class ThinTransitClientUnitTest extends TestCase
 
     public function getGuzzleClient()
     {
-        $serverUrl = config('vault.addr');
+        $serverUrl = self::VAULT_ADDR;
 
         return new Client([
             'base_uri' => $serverUrl,
             'timeout' => 2.0
         ]);
     }
-    
+
     public function getMockGuzzleClient()
     {
-        $serverUrl = config('vault.addr');
-        
+        $serverUrl = self::VAULT_ADDR;
+
         $mock = $this->getMockBuilder('GuzzleHttp\Client')
             ->setConstructorArgs([[
                 'base_uri' => $serverUrl,
@@ -57,8 +63,8 @@ class ThinTransitClientUnitTest extends TestCase
 
     public function getRealClient($guzzleClient = null)
     {
-        $serverUrl = config('vault.addr');
-        $token = config('vault.token');
+        $serverUrl = self::VAULT_ADDR;
+        $token =  self::VAULT_TOKEN;
 
         if (!$guzzleClient) {
             $guzzleClient = $this->getGuzzleClient();
@@ -68,7 +74,7 @@ class ThinTransitClientUnitTest extends TestCase
 
         return $client;
     }
-    
+
     public function testItEncodesProperlyToBase64()
     {
         $client = $this->getRealClient();
@@ -165,7 +171,7 @@ class ThinTransitClientUnitTest extends TestCase
         $client = $this->getRealClient();
         $data = $this->invokeMethod($client, 'encrypt', [$this::VAULTTEST_PREFIX, $this::VALID_STRING, 1234]);
     }
-    
+
     /** @test */
     public function it_sends_encrypt_command()
     {

@@ -1,38 +1,42 @@
 {
-    "name": ":vendor/:package_name",
+    "name": "kidfund/thin-transit-client",
     "type": "library",
     "description": ":package_description",
     "keywords": [
-        ":vendor",
-        ":package_name"
+        "kidfund",
+        "thin-transit-client"
     ],
     "homepage": "https://github.com/:vendor/:package_name",
     "license": "MIT",
     "authors": [
         {
-            "name": ":author_name",
-            "email": ":author_email",
-            "homepage": ":author_website",
-            "role": "Developer"
+            "name": ":Tim Broder",
+            "email": "timothy.broder@gmail.com",
+            "homepage": "https://timbroder.com",
+            "role": "CTO"
         }
     ],
     "require": {
-        "illuminate/support": "~5.1",
-        "php" : "~5.5|~7.0"
+        "illuminate/support": "^5.4",
+        "php" : "~5.5|~7.0",
+        "guzzlehttp/guzzle": "~5.3|~6.0",
+        "kidfund/monkey-patcher": "dev-master",
+        "illuminate/log": "^5.4"
     },
     "require-dev": {
         "phpunit/phpunit" : "4.*",
         "scrutinizer/ocular": "~1.1",
-        "squizlabs/php_codesniffer": "~2.3"
+        "squizlabs/php_codesniffer": "~2.3",
+        "illuminate/container": "^5.4"
     },
     "autoload": {
         "psr-4": {
-            ":vendor\\:package_name\\": "src"
+            "Kidfund\\ThinTransportVaultClient\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            ":vendor\\:package_name\\Test\\": "tests"
+            "Kidfund\\ThinTransportVaultClient\\Test\\": "tests"
         }
     },
     "scripts": {

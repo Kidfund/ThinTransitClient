@@ -2,10 +2,10 @@
 
 namespace Kidfund\ThinTransportVaultClient;
 
-use Log;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\ServerException;
+use Illuminate\Support\Facades\Log;
 
 class TransitClient implements VaultEncrypts
 {
@@ -47,10 +47,13 @@ class TransitClient implements VaultEncrypts
      * @param $key
      * @param $plaintext
      * @param null $context
-     * @return mixed
-     * @throws StringException
      *
-     * TODO PHP7 scalar type hinting
+     * @return mixed
+     * @throws StringException*
+     * @throws VaultException
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     *
+     * @TODO #PHP7 scalar type hinting
      */
     public function encrypt($key, $plaintext, $context = null)
     {
@@ -138,10 +141,13 @@ class TransitClient implements VaultEncrypts
      * @param $path
      * @param $cyphertext
      * @param null $context
-     * @return mixed
-     * @throws StringException
      *
-     * TODO PHP7 scalar type hinting
+     * @return mixed
+     * @throws StringException*@throws VaultException
+     * @throws VaultException
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     *
+     * @TODO #PHP7 scalar type hinting
      */
     public function decrypt($path, $cyphertext, $context = null)
     {
@@ -208,8 +214,10 @@ class TransitClient implements VaultEncrypts
      * @param $url
      * @param string $method
      * @param array $payload
+     *
      * @return mixed
      * @throws VaultException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     private function command($url, $method = 'POST', $payload = [])
     {
