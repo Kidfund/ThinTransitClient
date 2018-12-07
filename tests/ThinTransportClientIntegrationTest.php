@@ -4,7 +4,6 @@ use \Illuminate\Container\Container as Container;
 use \Illuminate\Support\Facades\Facade as Facade;
 use Kidfund\ThinTransportVaultClient\TransitClient;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
 /**
@@ -32,7 +31,7 @@ class ThinTransitClientIntegrationTest extends TestCase
 
         $app = new Container();
         $app->singleton('app', Container::class);
-        $app->bind(LoggerInterface::class, function($app)
+        $app->bind('log', function($app)
         {
             return new NullLogger();
         });
@@ -108,7 +107,7 @@ class ThinTransitClientIntegrationTest extends TestCase
     public function it_handles_bad_url_gracefully()
     {
         // will return a response but empty
-        $client = $this->getRealVaultClient(false, 'http://batcave.com');
+        $client = $this->getRealVaultClient(false, 'https://www.kidfund.us');
         $this->getEncryptResponse($this::VALID_STRING, $client);
     }
 
@@ -121,7 +120,7 @@ class ThinTransitClientIntegrationTest extends TestCase
     public function it_handles_bad_url_gracefully2()
     {
         // should cause Guzzle exception
-        $client = $this->getRealVaultClient(false, 'http://www.timbroder.com:8200');
+        $client = $this->getRealVaultClient(false, 'https://www.timbroder.com:8200');
         $this->getEncryptResponse($this::VALID_STRING, $client);
     }
 

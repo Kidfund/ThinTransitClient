@@ -118,10 +118,10 @@ Please see [CONTRIBUTING](CONTRIBUTING.md) and [CONDUCT](CONDUCT.md) for details
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
 
-[ico-version]: https://img.shields.io/packagist/v/kidfund/thin-transit-client?style=flat-square
+[ico-version]: https://img.shields.io/packagist/v/kidfund/thin-transit-client.svg?style=flat-square
 [ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square
 [ico-travis]: https://img.shields.io/travis/kidfund/thin-transit-client/master.svg?style=flat-square
-[ico-downloads]: https://img.shields.io/packagist/dt/kidfund/thin-transit-client?style=flat-square
+[ico-downloads]: https://img.shields.io/packagist/dt/kidfund/thin-transit-client.svg?style=flat-square
 
 [link-packagist]: https://packagist.org/packages/kidfund/thin-transit-client
 [link-travis]: https://travis-ci.org/kidfund/thin-transit-client

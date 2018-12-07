@@ -4,6 +4,7 @@ namespace Kidfund\ThinTransportVaultClient;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
 use Illuminate\Support\Facades\Log;
 
@@ -243,6 +244,11 @@ class TransitClient implements VaultEncrypts
                 $this->getCommandPayload($payload)
             );
         } catch (ServerException $e) {
+            $exceptionResponse = $e->getResponse();
+            $reasonPhrase = $exceptionResponse->getReasonPhrase();
+            $statusCode = $exceptionResponse->getStatusCode();
+            throw new VaultException($reasonPhrase, $statusCode);
+        } catch (ClientException $e) {
             $exceptionResponse = $e->getResponse();
             $reasonPhrase = $exceptionResponse->getReasonPhrase();
             $statusCode = $exceptionResponse->getStatusCode();
