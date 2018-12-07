@@ -1,70 +1,128 @@
-# :package_name
+# ThinTransitClient
 
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![Software License][ico-license]](LICENSE.md)
 [![Build Status][ico-travis]][link-travis]
-[![Coverage Status][ico-scrutinizer]][link-scrutinizer]
-[![Quality Score][ico-code-quality]][link-code-quality]
-[![Total Downloads][ico-downloads]][link-downloads]
+[![Total Downloads][ico-downloads]][link-packagist]
 
-**Note:** Replace ```:author_name``` ```:author_username``` ```:author_website``` ```:author_email``` ```:vendor``` ```:package_name``` ```:package_description``` with their correct values in [README.md](README.md), [CHANGELOG.md](CHANGELOG.md), [CONTRIBUTING.md](CONTRIBUTING.md), [LICENSE.md](LICENSE.md) and [composer.json](composer.json) files, then delete this line.
+## What this is
 
-This is where your description should go. Try and limit it to a paragraph or two, and maybe throw in a mention of what
-PSRs you support to avoid any confusion with users and contributors.
+A very thin PHP wrapper around Hashicorp Vault's [Transit Engine](https://www.vaultproject.io/docs/secrets/transit/index.html)
+
+## What this isn't
+
+Unfortunatly, this isn't a full fledged vault client. When I started writing [LaraVault](https://github.com/Kidfund/LaraVault), [these clients](https://www.vaultproject.io/api/libraries.html#php) didn't exist yet. This client is the bare minimum need to communicate with Transit. Ideally, LaraVault would deprecate the need for this and use one of those clients
 
 ## Install
 
 Via Composer
 
 ``` bash
-$ composer require :vendor/:package_name
+$ composer require kidfund/thin-transit-client
 ```
 
 ## Usage
 
-``` php
-$skeleton = new League\Skeleton();
-echo $skeleton->echoPhrase('Hello, League!');
+### Setup 
+
+You'll need to store the address of your vault server and the currently available token somewhere. This is the token setup we use with LaraVault
+
+```hcl
+path "transit/decrypt/*" {
+  capabilities = ["create", "update"]
+}
+
+path "transit/encrypt/*" {
+  capabilities = ["create", "update"]
+}
 ```
 
-## Change log
+If we were using the TransitClient in a Laravel Service Providor, we could do something like this
 
-Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recently.
+```php
+/**
+ * @return TransitClient|null
+ * @throws Exception
+ */
+protected function getTransitClient()
+{
+    $enabled = config('vault.enabled');
+
+    if (!$enabled) {
+        return null;
+    }
+
+    $vaultAddr = config('vault.addr');
+    $vaultToken = config('vault.token');
+
+    if ($vaultToken === null || $vaultToken === 'none') {
+        throw new Exception('Vault token must be configured');
+    }
+
+    $client = new TransitClient($vaultAddr, $vaultToken);
+
+    return $client;
+}
+
+/**
+ * @return void
+ */
+public function register()
+{
+    $this->app->singleton(TransitClient::class, function () {
+        return $this->getTransitClient();
+    });
+}
+```
+
+### Encrypting
+
+```php
+$encrypted = $client->encrypt($key, $plaintext);
+```
+
+You can also pass a context
+
+```php
+$encrypted = $client->encrypt($key, $plaintext, $context);
+```
+
+### Decrypting
+
+```php
+$plaintext = $client->decrypt($key, $cipherText,);
+```
+
+You can also pass a context
+
+```php
+$plaintext = $client->decrypt($key, $cipherText, $context);
+```
+
 
 ## Testing
 
 ``` bash
-$ composer test
+$ ./vendor/bin/phpunit
 ```
 
 ## Contributing
 
 Please see [CONTRIBUTING](CONTRIBUTING.md) and [CONDUCT](CONDUCT.md) for details.
 
-## Security
-
-If you discover any security related issues, please email :author_email instead of using the issue tracker.
-
 ## Credits
 
-- [:author_name][link-author]
-- [All Contributors][link-contributors]
+- [@timborder][link-author]
 
 ## License
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
 
-[ico-version]: https://img.shields.io/packagist/v/:vendor/:package_name.svg?style=flat-square
+[ico-version]: https://img.shields.io/packagist/v/kidfund/thin-transit-client?style=flat-square
 [ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square
-[ico-travis]: https://img.shields.io/travis/:vendor/:package_name/master.svg?style=flat-square
-[ico-scrutinizer]: https://img.shields.io/scrutinizer/coverage/g/:vendor/:package_name.svg?style=flat-square
-[ico-code-quality]: https://img.shields.io/scrutinizer/g/:vendor/:package_name.svg?style=flat-square
-[ico-downloads]: https://img.shields.io/packagist/dt/:vendor/:package_name.svg?style=flat-square
+[ico-travis]: https://img.shields.io/travis/kidfund/thin-transit-client/master.svg?style=flat-square
+[ico-downloads]: https://img.shields.io/packagist/dt/kidfund/thin-transit-client?style=flat-square
 
-[link-packagist]: https://packagist.org/packages/:vendor/:package_name
-[link-travis]: https://travis-ci.org/:vendor/:package_name
-[link-scrutinizer]: https://scrutinizer-ci.com/g/:vendor/:package_name/code-structure
-[link-code-quality]: https://scrutinizer-ci.com/g/:vendor/:package_name
-[link-downloads]: https://packagist.org/packages/:vendor/:package_name
-[link-author]: https://github.com/:author_username
-[link-contributors]: ../../contributors
+[link-packagist]: https://packagist.org/packages/kidfund/thin-transit-client
+[link-travis]: https://travis-ci.org/kidfund/thin-transit-client
+[link-author]: https://github.com/timbroder
