@@ -7,6 +7,11 @@ use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\ServerException;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * Class TransitClient
+ *
+ * @package Kidfund\ThinTransportVaultClient
+ */
 class TransitClient implements VaultEncrypts
 {
     private $serverUrl;
@@ -184,6 +189,12 @@ class TransitClient implements VaultEncrypts
         return $plaintext;
     }
 
+    /**
+     * @param $cyphertext
+     * @param null $context
+     *
+     * @return array
+     */
     protected function getDecryptPayload($cyphertext, $context = null)
     {
         $data = ['ciphertext' => $cyphertext];
@@ -196,9 +207,13 @@ class TransitClient implements VaultEncrypts
         return $data;
     }
 
+    /**
+     * @param $payload
+     *
+     * @return array
+     */
     protected function getCommandPayload($payload)
     {
-        $json = json_encode($payload);
         $payload = [
             'headers' => [
                 'X-Vault-Token' => $this->token,
@@ -237,6 +252,11 @@ class TransitClient implements VaultEncrypts
         return $this->parseResponse($response);
     }
 
+    /**
+     * @param $response
+     *
+     * @return mixed
+     */
     private function parseResponse($response)
     {
         return json_decode($response->getBody(), true);

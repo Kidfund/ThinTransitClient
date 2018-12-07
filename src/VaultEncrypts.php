@@ -7,9 +7,13 @@
 
 namespace Kidfund\ThinTransportVaultClient;
 
+/**
+ * Interface VaultEncrypts
+ *
+ * @package Kidfund\ThinTransportVaultClient
+ */
 interface VaultEncrypts
 {
     public function encrypt($key, $plaintext, $context = null);
-
     public function decrypt($path, $cyphertext, $context = null);
 }

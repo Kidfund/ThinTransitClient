@@ -9,6 +9,11 @@ namespace Kidfund\ThinTransportVaultClient;
 
 use Exception;
 
+/**
+ * Class StringException
+ *
+ * @package Kidfund\ThinTransportVaultClient
+ */
 class StringException extends Exception
 {
 }
