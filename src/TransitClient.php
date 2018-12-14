@@ -4,9 +4,9 @@ namespace Kidfund\ThinTransportVaultClient;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
+use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Class TransitClient.
@@ -77,11 +77,11 @@ class TransitClient implements VaultEncrypts
             throw new VaultException('Empty response from Vault server');
         }
 
-        if (!array_key_exists('data', $response)) {
+        if (! array_key_exists('data', $response)) {
             throw new VaultException('Vault Encrypt: data not returned');
         }
 
-        if (!array_key_exists('ciphertext', $response['data'])) {
+        if (! array_key_exists('ciphertext', $response['data'])) {
             throw new VaultException('Vault Encrypt: ciphertext not returned');
         }
 

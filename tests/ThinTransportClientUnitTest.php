@@ -1,12 +1,12 @@
 <?php
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
+use PHPUnit\Framework\TestCase;
+use GuzzleHttp\Handler\MockHandler;
 use Kidfund\MonkeyPatcher\MonkeyPatcher;
 use Kidfund\ThinTransportVaultClient\TransitClient;
-use PHPUnit\Framework\TestCase;
 
 /**
  * @author: timbroder
@@ -68,7 +68,7 @@ class ThinTransitClientUnitTest extends TestCase
         $serverUrl = self::VAULT_ADDR;
         $token = self::VAULT_TOKEN;
 
-        if (!$guzzleClient) {
+        if (! $guzzleClient) {
             $guzzleClient = $this->getGuzzleClient();
         }
 

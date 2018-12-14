@@ -3,6 +3,7 @@
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![Software License][ico-license]](LICENSE.md)
 [![Build Status][ico-travis]][link-travis]
+[![StyleCI][ico-styleci]][link-styleci]
 [![Total Downloads][ico-downloads]][link-packagist]
 
 ## What this is
@@ -121,8 +122,10 @@ The MIT License (MIT). Please see [License File](LICENSE.md) for more informatio
 [ico-version]: https://img.shields.io/packagist/v/kidfund/thin-transit-client.svg?style=flat-square
 [ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square
 [ico-travis]: https://img.shields.io/travis/kidfund/thin-transit-client/master.svg?style=flat-square
+[ico-styleci]: https://github.styleci.io/repos/157907842/shield?branch=master
 [ico-downloads]: https://img.shields.io/packagist/dt/kidfund/thin-transit-client.svg?style=flat-square
 
 [link-packagist]: https://packagist.org/packages/kidfund/thin-transit-client
 [link-travis]: https://travis-ci.org/kidfund/thin-transit-client
 [link-author]: https://github.com/timbroder
+[link-styleci]: https://github.styleci.io/repos/157907842

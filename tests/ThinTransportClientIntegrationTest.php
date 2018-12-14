@@ -1,10 +1,10 @@
 <?php
 
+use Psr\Log\NullLogger;
+use PHPUnit\Framework\TestCase;
 use Illuminate\Container\Container as Container;
 use Illuminate\Support\Facades\Facade as Facade;
 use Kidfund\ThinTransportVaultClient\TransitClient;
-use PHPUnit\Framework\TestCase;
-use Psr\Log\NullLogger;
 
 /**
  * @author: timbroder
