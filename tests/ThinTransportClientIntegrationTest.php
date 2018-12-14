@@ -1,7 +1,7 @@
 <?php
 
-use \Illuminate\Container\Container as Container;
-use \Illuminate\Support\Facades\Facade as Facade;
+use Illuminate\Container\Container as Container;
+use Illuminate\Support\Facades\Facade as Facade;
 use Kidfund\ThinTransportVaultClient\TransitClient;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
@@ -9,21 +9,22 @@ use Psr\Log\NullLogger;
 /**
  * @author: timbroder
  * Date: 4/13/16
+ *
  * @copyright 2018 Kidfund Inc
  */
 class ThinTransitClientIntegrationTest extends TestCase
 {
     // TODO provide setup instructions to run vault
 
-    const VAULT_ADDR='http://kidfund-dev-web.app:8200';
-    const VAULT_TOKEN='6a4a2fd1-0d72-40a3-74f1-0b303e943fda';
+    const VAULT_ADDR = 'http://kidfund-dev-web.app:8200';
+    const VAULT_TOKEN = '6a4a2fd1-0d72-40a3-74f1-0b303e943fda';
     const VAULT_ROOT_TOKEN = 'ec25daef14e-3bfb81d9-c695-8a8b-2d27';
     const VAULTTEST_PREFIX = 'thingtransport_test';
     const VALID_STRING = 'the quick brown fox';
     const VAULT_PREFIX = 'vault:v1:';
 
     /**
-     * Get env variables. these are set in phpunit.xml or can be overridden on the CLI
+     * Get env variables. these are set in phpunit.xml or can be overridden on the CLI.
      */
     public function setUp()
     {
@@ -31,8 +32,7 @@ class ThinTransitClientIntegrationTest extends TestCase
 
         $app = new Container();
         $app->singleton('app', Container::class);
-        $app->bind('log', function($app)
-        {
+        $app->bind('log', function ($app) {
             return new NullLogger();
         });
 
@@ -42,6 +42,7 @@ class ThinTransitClientIntegrationTest extends TestCase
     /**
      * @param bool $root
      * @param null $addr
+     *
      * @return TransitClient
      */
     public function getRealVaultClient($root = false, $addr = null)
@@ -55,6 +56,7 @@ class ThinTransitClientIntegrationTest extends TestCase
         if ($addr == null) {
             $addr = self::VAULT_ADDR;
         }
+
         return new TransitClient($addr, $token);
     }
 
@@ -62,9 +64,10 @@ class ThinTransitClientIntegrationTest extends TestCase
      * @param $plaintext
      * @param null $client
      *
-     * @return mixed
      * @throws \Kidfund\ThinTransportVaultClient\VaultException*
      * @throws \GuzzleHttp\Exception\GuzzleException
+     *
+     * @return mixed
      */
     public function getEncryptResponse($plaintext, $client = null)
     {
@@ -81,9 +84,10 @@ class ThinTransitClientIntegrationTest extends TestCase
      * @param $ciphertext
      * @param null $client
      *
-     * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Kidfund\ThinTransportVaultClient\VaultException
+     *
+     * @return mixed
      */
     public function getDecryptResponse($ciphertext, $client = null)
     {

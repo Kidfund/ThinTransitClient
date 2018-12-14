@@ -9,9 +9,7 @@ use GuzzleHttp\Exception\ServerException;
 use Illuminate\Support\Facades\Log;
 
 /**
- * Class TransitClient
- *
- * @package Kidfund\ThinTransportVaultClient
+ * Class TransitClient.
  */
 class TransitClient implements VaultEncrypts
 {
@@ -43,7 +41,7 @@ class TransitClient implements VaultEncrypts
         if ($client == null) {
             $this->client = new Client([
                 'base_uri' => $this->serverUrl,
-                'timeout' => 5.0,
+                'timeout'  => 5.0,
             ]);
         } else {
             $this->client = $client;
@@ -51,13 +49,14 @@ class TransitClient implements VaultEncrypts
     }
 
     /**
-     * @param string $key
-     * @param string $plaintext
+     * @param string      $key
+     * @param string      $plaintext
      * @param string|null $context
      *
-     * @return string
      * @throws VaultException
      * @throws \GuzzleHttp\Exception\GuzzleException
+     *
+     * @return string
      */
     public function encrypt(string $key, string $plaintext, string $context = null) : string
     {
@@ -65,9 +64,9 @@ class TransitClient implements VaultEncrypts
 
         Log::debug('Encrypting');
         Log::debug([
-            'key' => $key,
+            'key'       => $key,
             'plaintext' => $plaintext,
-            'context' => $context,
+            'context'   => $context,
         ]);
 
         $data = $this->getEncryptPayload($key, $plaintext, $context);
@@ -90,8 +89,8 @@ class TransitClient implements VaultEncrypts
     }
 
     /**
-     * @param string $key
-     * @param string $plaintext
+     * @param string      $key
+     * @param string      $plaintext
      * @param string|null $context
      *
      * @return array
@@ -135,21 +134,22 @@ class TransitClient implements VaultEncrypts
     }
 
     /**
-     * @param string $path
-     * @param string $cyphertext
+     * @param string      $path
+     * @param string      $cyphertext
      * @param string|null $context
      *
-     * @return string
      * @throws VaultException
      * @throws \GuzzleHttp\Exception\GuzzleException
+     *
+     * @return string
      */
     public function decrypt(string $path, string $cyphertext, string $context = null) : string
     {
         Log::debug('Decrypting');
         Log::debug([
-            'path' => $path,
+            'path'       => $path,
             'cyphertext' => $cyphertext,
-            'context' => $context,
+            'context'    => $context,
         ]);
 
         $url = '/transit/decrypt/'.$path;
@@ -169,7 +169,7 @@ class TransitClient implements VaultEncrypts
     }
 
     /**
-     * @param string $cyphertext
+     * @param string      $cyphertext
      * @param string|null $context
      *
      * @return array
@@ -196,7 +196,7 @@ class TransitClient implements VaultEncrypts
         $payload = [
             'headers' => [
                 'X-Vault-Token' => $this->token,
-                'Content-Type' => 'application/json',
+                'Content-Type'  => 'application/json',
             ],
             'json' => $payload,
         ];
@@ -207,11 +207,12 @@ class TransitClient implements VaultEncrypts
     /**
      * @param $url
      * @param string $method
-     * @param array $payload
+     * @param array  $payload
      *
-     * @return mixed
      * @throws VaultException
      * @throws \GuzzleHttp\Exception\GuzzleException
+     *
+     * @return mixed
      */
     private function command(string $url, string $method = 'POST', array $payload = [])
     {
@@ -225,11 +226,13 @@ class TransitClient implements VaultEncrypts
             $exceptionResponse = $e->getResponse();
             $reasonPhrase = $exceptionResponse->getReasonPhrase();
             $statusCode = $exceptionResponse->getStatusCode();
+
             throw new VaultException($reasonPhrase, $statusCode);
         } catch (ClientException $e) {
             $exceptionResponse = $e->getResponse();
             $reasonPhrase = $exceptionResponse->getReasonPhrase();
             $statusCode = $exceptionResponse->getStatusCode();
+
             throw new VaultException($reasonPhrase, $statusCode);
         }
 

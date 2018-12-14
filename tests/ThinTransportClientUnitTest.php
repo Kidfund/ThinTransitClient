@@ -1,4 +1,5 @@
 <?php
+
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
@@ -10,6 +11,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * @author: timbroder
  * Date: 4/13/16
+ *
  * @copyright 2018 Kidfund Inc
  */
 class ThinTransitClientUnitTest extends TestCase
@@ -18,7 +20,7 @@ class ThinTransitClientUnitTest extends TestCase
 
     const VAULT_ADDR = 'http://192.168.20.20:8200';
     const VAULT_TOKEN = '3bfb81d9-c695-8a8b-2d27-ec25daef14e';
-    const ENCRYPTED_VALUE = "vault:v1:UEhQVW5pdF9GcmFtZXdvcmtfTW9ja09iamVjdF9Nb2NrT2JqZWN0";
+    const ENCRYPTED_VALUE = 'vault:v1:UEhQVW5pdF9GcmFtZXdvcmtfTW9ja09iamVjdF9Nb2NrT2JqZWN0';
     const VALID_STRING = 'the quick brown fox';
     const ENCODED_VALID_STRING = 'dGhlIHF1aWNrIGJyb3duIGZveA==';
     const VAULTTEST_PREFIX = 'thingtransport_test';
@@ -26,16 +28,16 @@ class ThinTransitClientUnitTest extends TestCase
     const VAULT_CONTEXT = 'test';
     const ENCODED_VAULT_CONTEXT = 'dGVzdA==';
     const ENCODED__ENCRYPTED_VALUE = 'dmF1bHQ6djE6VUVoUVZXNXBkRjlHY21GdFpYZHZjbXRmVFc5amEwOWlhbVZqZEY5TmIyTnJUMkpxWldOMA==';
-    const ENCRYPTED_RETURN = "{
-      \"data\": {
-        \"ciphertext\": \"vault:v1:UEhQVW5pdF9GcmFtZXdvcmtfTW9ja09iamVjdF9Nb2NrT2JqZWN0\"
+    const ENCRYPTED_RETURN = '{
+      "data": {
+        "ciphertext": "vault:v1:UEhQVW5pdF9GcmFtZXdvcmtfTW9ja09iamVjdF9Nb2NrT2JqZWN0"
       }
-    }";
-    const DECRYPTED_RETURN = "{
-      \"data\": {
-        \"plaintext\": \"dGhlIHF1aWNrIGJyb3duIGZveA==\"
+    }';
+    const DECRYPTED_RETURN = '{
+      "data": {
+        "plaintext": "dGhlIHF1aWNrIGJyb3duIGZveA=="
       }
-    }";
+    }';
 
     public function getGuzzleClient()
     {
@@ -43,7 +45,7 @@ class ThinTransitClientUnitTest extends TestCase
 
         return new Client([
             'base_uri' => $serverUrl,
-            'timeout' => 2.0
+            'timeout'  => 2.0,
         ]);
     }
 
@@ -54,7 +56,7 @@ class ThinTransitClientUnitTest extends TestCase
         $mock = $this->getMockBuilder('GuzzleHttp\Client')
             ->setConstructorArgs([[
                 'base_uri' => $serverUrl,
-                'timeout' => 2.0
+                'timeout'  => 2.0,
             ]])
             ->getMock();
 
@@ -64,7 +66,7 @@ class ThinTransitClientUnitTest extends TestCase
     public function getRealClient($guzzleClient = null)
     {
         $serverUrl = self::VAULT_ADDR;
-        $token =  self::VAULT_TOKEN;
+        $token = self::VAULT_TOKEN;
 
         if (!$guzzleClient) {
             $guzzleClient = $this->getGuzzleClient();
@@ -91,10 +93,10 @@ class ThinTransitClientUnitTest extends TestCase
     public function it_creates_a_contextless_encrypt_payload()
     {
         $expected = [
-            'plaintext' => $this::ENCODED_VALID_STRING
+            'plaintext' => $this::ENCODED_VALID_STRING,
         ];
         $client = $this->getRealClient();
-        $data = $this->invokeMethod($client, 'getEncryptPayload', [$this::VAULTTEST_PREFIX,$this::VALID_STRING]);
+        $data = $this->invokeMethod($client, 'getEncryptPayload', [$this::VAULTTEST_PREFIX, $this::VALID_STRING]);
 
         $this->assertEquals($expected, $data);
     }
@@ -104,7 +106,7 @@ class ThinTransitClientUnitTest extends TestCase
     {
         $expected = [
             'plaintext' => $this::ENCODED_VALID_STRING,
-            'context' => $this::ENCODED_VAULT_CONTEXT
+            'context'   => $this::ENCODED_VAULT_CONTEXT,
         ];
         $client = $this->getRealClient();
         $data = $this->invokeMethod($client, 'getEncryptPayload', [$this::VAULTTEST_PREFIX, $this::VALID_STRING, $this::VAULT_CONTEXT]);
@@ -120,19 +122,19 @@ class ThinTransitClientUnitTest extends TestCase
                 200,
                 $headers = [],
                 $body = $this::ENCRYPTED_RETURN
-            )
+            ),
         ]);
         $mockHandler = HandlerStack::create($mockResponse);
         $mock = new Client(['handler' => $mockHandler]);
 
         $expected = [
             'data' => [
-                "ciphertext" => "vault:v1:UEhQVW5pdF9GcmFtZXdvcmtfTW9ja09iamVjdF9Nb2NrT2JqZWN0"
-            ]
+                'ciphertext' => 'vault:v1:UEhQVW5pdF9GcmFtZXdvcmtfTW9ja09iamVjdF9Nb2NrT2JqZWN0',
+            ],
         ];
 
         $client = $this->getRealClient($mock);
-        $response = $this->invokeMethod($client, 'command', [$this::VAULTTEST_PREFIX,$this::VALID_STRING]);
+        $response = $this->invokeMethod($client, 'command', [$this::VAULTTEST_PREFIX, $this::VALID_STRING]);
         $this->assertEquals($expected, $response);
     }
 
@@ -143,13 +145,13 @@ class ThinTransitClientUnitTest extends TestCase
                 200,
                 $headers = [],
                 $body = $this::ENCRYPTED_RETURN
-            )
+            ),
         ]);
         $mockHandler = HandlerStack::create($mockResponse);
         $mock = new Client(['handler' => $mockHandler]);
 
         $client = $this->getRealClient($mock);
-        $response = $this->invokeMethod($client, 'encrypt', [$this::VAULTTEST_PREFIX,$this::VALID_STRING]);
+        $response = $this->invokeMethod($client, 'encrypt', [$this::VAULTTEST_PREFIX, $this::VALID_STRING]);
         $this->assertEquals($this::ENCRYPTED_VALUE, $response);
     }
 
@@ -157,7 +159,7 @@ class ThinTransitClientUnitTest extends TestCase
     public function it_creates_a_contextless_decrypt_payload()
     {
         $expected = [
-            'ciphertext' => $this::ENCRYPTED_VALUE
+            'ciphertext' => $this::ENCRYPTED_VALUE,
         ];
         $client = $this->getRealClient();
         $data = $this->invokeMethod($client, 'getDecryptPayload', [$this::ENCRYPTED_VALUE]);
@@ -170,7 +172,7 @@ class ThinTransitClientUnitTest extends TestCase
     {
         $expected = [
             'ciphertext' => $this::ENCRYPTED_VALUE,
-            'context' => $this::ENCODED_VAULT_CONTEXT
+            'context'    => $this::ENCODED_VAULT_CONTEXT,
         ];
         $client = $this->getRealClient();
         $data = $this->invokeMethod($client, 'getDecryptPayload', [$this::ENCRYPTED_VALUE, $this::VAULT_CONTEXT]);
@@ -186,13 +188,13 @@ class ThinTransitClientUnitTest extends TestCase
                 200,
                 $headers = [],
                 $body = $this::DECRYPTED_RETURN
-            )
+            ),
         ]);
         $mockHandler = HandlerStack::create($mockResponse);
         $mock = new Client(['handler' => $mockHandler]);
 
         $client = $this->getRealClient($mock);
-        $response = $this->invokeMethod($client, 'decrypt', [$this::VAULTTEST_PREFIX,$this::ENCRYPTED_VALUE]);
+        $response = $this->invokeMethod($client, 'decrypt', [$this::VAULTTEST_PREFIX, $this::ENCRYPTED_VALUE]);
         $this->assertEquals($this::VALID_STRING, $response);
     }
 }
