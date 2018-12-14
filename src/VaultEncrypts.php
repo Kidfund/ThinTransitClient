@@ -14,6 +14,6 @@ namespace Kidfund\ThinTransportVaultClient;
  */
 interface VaultEncrypts
 {
-    public function encrypt($key, $plaintext, $context = null);
-    public function decrypt($path, $cyphertext, $context = null);
+    public function encrypt(string $key, string $plaintext, string $context = null) : string;
+    public function decrypt(string $path, string $cyphertext, string $context = null) : string;
 }

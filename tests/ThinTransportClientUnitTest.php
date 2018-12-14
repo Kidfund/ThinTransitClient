@@ -112,66 +112,6 @@ class ThinTransitClientUnitTest extends TestCase
         $this->assertEquals($expected, $data);
     }
 
-    /**
-     * @test
-     * @expectedException     Kidfund\ThinTransportVaultClient\StringException
-     */
-    public function encrypt_key_must_be_string()
-    {
-        $client = $this->getRealClient();
-        $data = $this->invokeMethod($client, 'encrypt', [[$this::VAULTTEST_PREFIX], $this::VALID_STRING, $this::VAULT_CONTEXT]);
-    }
-
-    /**
-     * @test
-     * @expectedException     Kidfund\ThinTransportVaultClient\StringException
-     */
-    public function encrypt_key_must_be_string2()
-    {
-        $client = $this->getRealClient();
-        $data = $this->invokeMethod($client, 'encrypt', [123, $this::VALID_STRING, $this::VAULT_CONTEXT]);
-    }
-
-    /**
-     * @test
-     * @expectedException     Kidfund\ThinTransportVaultClient\StringException
-     */
-    public function encrypt_plaintext_must_be_string()
-    {
-        $client = $this->getRealClient();
-        $data = $this->invokeMethod($client, 'encrypt', [$this::VAULTTEST_PREFIX, [$this::VALID_STRING], $this::VAULT_CONTEXT]);
-    }
-
-    /**
-     * @test
-     * @expectedException     Kidfund\ThinTransportVaultClient\StringException
-     */
-    public function encrypt_plaintext_must_be_string2()
-    {
-        $client = $this->getRealClient();
-        $data = $this->invokeMethod($client, 'encrypt', [$this::VAULTTEST_PREFIX, 1234, $this::VAULT_CONTEXT]);
-    }
-
-    /**
-     * @test
-     * @expectedException     Kidfund\ThinTransportVaultClient\StringException
-     */
-    public function encrypt_context_must_be_string()
-    {
-        $client = $this->getRealClient();
-        $data = $this->invokeMethod($client, 'encrypt', [$this::VAULTTEST_PREFIX, $this::VALID_STRING, [$this::VAULT_CONTEXT]]);
-    }
-
-    /**
-     * @test
-     * @expectedException     Kidfund\ThinTransportVaultClient\StringException
-     */
-    public function encrypt_context_must_be_string2()
-    {
-        $client = $this->getRealClient();
-        $data = $this->invokeMethod($client, 'encrypt', [$this::VAULTTEST_PREFIX, $this::VALID_STRING, 1234]);
-    }
-
     /** @test */
     public function it_sends_encrypt_command()
     {

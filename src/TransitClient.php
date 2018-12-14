@@ -21,8 +21,9 @@ class TransitClient implements VaultEncrypts
 
     /**
      * TransportClient constructor.
+     *
      * @param string $serverUrl The vault server E.G. http://192.168.20.20:8200
-     * @param string $token Token with the following (or more granular) access:
+     * @param string $token     Token with the following (or more granular) access:
      *
      * path "transit/decrypt/*" {
      *   capabilities = ["create", "update"]
@@ -33,9 +34,9 @@ class TransitClient implements VaultEncrypts
      * }
      *
      * also see vault.policy.web.json.example
-     * @param null $client
+     * @param ClientInterface $client
      */
-    public function __construct($serverUrl, $token, ClientInterface $client = null)
+    public function __construct(string $serverUrl, string $token, ClientInterface $client = null)
     {
         $this->serverUrl = $serverUrl;
         $this->token = $token;
@@ -50,29 +51,16 @@ class TransitClient implements VaultEncrypts
     }
 
     /**
-     * @param $key
-     * @param $plaintext
-     * @param null $context
+     * @param string $key
+     * @param string $plaintext
+     * @param string|null $context
      *
-     * @return mixed
-     * @throws StringException*
+     * @return string
      * @throws VaultException
      * @throws \GuzzleHttp\Exception\GuzzleException
-     *
-     * @TODO #PHP7 scalar type hinting
      */
-    public function encrypt($key, $plaintext, $context = null)
+    public function encrypt(string $key, string $plaintext, string $context = null) : string
     {
-        if (!is_string($key)) {
-            throw new StringException('$key must be a string');
-        }
-        if (!is_string($plaintext)) {
-            throw new StringException('$plaintext must be a string');
-        }
-        if ($context !== null && !is_string($context)) {
-            throw new StringException('$context must be a string');
-        }
-
         $url = '/transit/encrypt/'.$key;
 
         Log::debug('Encrypting');
@@ -102,12 +90,13 @@ class TransitClient implements VaultEncrypts
     }
 
     /**
-     * @param $key
-     * @param $plaintext
-     * @param null $context
+     * @param string $key
+     * @param string $plaintext
+     * @param string|null $context
+     *
      * @return array
      */
-    protected function getEncryptPayload($key, $plaintext, $context = null)
+    protected function getEncryptPayload(string $key, string $plaintext, string $context = null) : array
     {
         $encoded = $this->encode($plaintext);
 
@@ -126,47 +115,36 @@ class TransitClient implements VaultEncrypts
     }
 
     /**
-     * @param $string
-     * @return mixed
+     * @param string $string
+     *
+     * @return string
      */
-    protected function encode($string)
+    protected function encode(string $string) : string
     {
         return base64_encode($string);
     }
 
     /**
-     * @param $base64
-     * @return mixed
+     * @param string $base64
+     *
+     * @return string
      */
-    protected function decode($base64)
+    protected function decode(string $base64) : string
     {
         return base64_decode($base64);
     }
 
     /**
-     * @param $path
-     * @param $cyphertext
-     * @param null $context
+     * @param string $path
+     * @param string $cyphertext
+     * @param string|null $context
      *
-     * @return mixed
-     * @throws StringException*@throws VaultException
+     * @return string
      * @throws VaultException
      * @throws \GuzzleHttp\Exception\GuzzleException
-     *
-     * @TODO #PHP7 scalar type hinting
      */
-    public function decrypt($path, $cyphertext, $context = null)
+    public function decrypt(string $path, string $cyphertext, string $context = null) : string
     {
-        if (!is_string($path)) {
-            throw new StringException('$path must be a string');
-        }
-        if (!is_string($cyphertext)) {
-            throw new StringException('$cyphertext must be a string');
-        }
-        if ($context !== null && !is_string($context)) {
-            throw new StringException('$context must be a string');
-        }
-
         Log::debug('Decrypting');
         Log::debug([
             'path' => $path,
@@ -191,12 +169,12 @@ class TransitClient implements VaultEncrypts
     }
 
     /**
-     * @param $cyphertext
-     * @param null $context
+     * @param string $cyphertext
+     * @param string|null $context
      *
      * @return array
      */
-    protected function getDecryptPayload($cyphertext, $context = null)
+    protected function getDecryptPayload(string $cyphertext, string $context = null) : array
     {
         $data = ['ciphertext' => $cyphertext];
 
@@ -209,11 +187,11 @@ class TransitClient implements VaultEncrypts
     }
 
     /**
-     * @param $payload
+     * @param array $payload
      *
      * @return array
      */
-    protected function getCommandPayload($payload)
+    protected function getCommandPayload(array $payload) : array
     {
         $payload = [
             'headers' => [
@@ -235,7 +213,7 @@ class TransitClient implements VaultEncrypts
      * @throws VaultException
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    private function command($url, $method = 'POST', $payload = [])
+    private function command(string $url, string $method = 'POST', array $payload = [])
     {
         Log::debug($payload);
 

@@ -18,19 +18,14 @@
             "role": "CTO"
         }
     ],
-    "config": {
-        "platform": {
-            "php": "5.5.9"
-        }
-    },
     "require": {
-        "php" : "5.5.9",
-        "guzzlehttp/guzzle": "~5.3|~6.0",
+        "php" : "~7.0",
+        "guzzlehttp/guzzle": "~6.0",
         "illuminate/support": "5.*",
         "illuminate/log": "5.*"
     },
     "require-dev": {
-        "phpunit/phpunit" : "4.*",
+        "phpunit/phpunit" : "~7.0",
         "illuminate/container": "5.*",
         "kidfund/monkey-patcher": "dev-master"
     },

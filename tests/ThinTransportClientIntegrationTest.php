@@ -63,7 +63,6 @@ class ThinTransitClientIntegrationTest extends TestCase
      * @param null $client
      *
      * @return mixed
-     * @throws \Kidfund\ThinTransportVaultClient\StringException
      * @throws \Kidfund\ThinTransportVaultClient\VaultException*
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
@@ -84,7 +83,6 @@ class ThinTransitClientIntegrationTest extends TestCase
      *
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
-     * @throws \Kidfund\ThinTransportVaultClient\StringException
      * @throws \Kidfund\ThinTransportVaultClient\VaultException
      */
     public function getDecryptResponse($ciphertext, $client = null)
