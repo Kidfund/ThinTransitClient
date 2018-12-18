@@ -6,6 +6,19 @@
 [![StyleCI][ico-styleci]][link-styleci]
 [![Total Downloads][ico-downloads]][link-packagist]
 
+   * [ThinTransitClient](#thintransitclient)
+      * [What this is](#what-this-is)
+      * [What this isn't](#what-this-isnt)
+   * [Install](#install)
+   * [Usage](#usage)
+      * [Setup](#setup)
+      * [Encrypting](#encrypting)
+      * [Decrypting](#decrypting)
+   * [Testing](#testing)
+   * [Contributing](#contributing)
+   * [Credits](#credits)
+   * [License](#license)
+
 ## What this is
 
 A very thin PHP wrapper around Hashicorp Vault's [Transit Engine](https://www.vaultproject.io/docs/secrets/transit/index.html)
@@ -14,7 +27,7 @@ A very thin PHP wrapper around Hashicorp Vault's [Transit Engine](https://www.va
 
 Unfortunatly, this isn't a full fledged vault client. When I started writing [LaraVault](https://github.com/Kidfund/LaraVault), [these clients](https://www.vaultproject.io/api/libraries.html#php) didn't exist yet. This client is the bare minimum need to communicate with Transit. Ideally, LaraVault would deprecate the need for this and use one of those clients
 
-## Install
+# Install
 
 Via Composer
 
@@ -22,9 +35,9 @@ Via Composer
 $ composer require kidfund/thin-transit-client
 ```
 
-## Usage
+# Usage
 
-### Setup 
+## Setup 
 
 You'll need to store the address of your vault server and the currently available token somewhere. This is the token setup we use with LaraVault
 
@@ -76,7 +89,7 @@ public function register()
 }
 ```
 
-### Encrypting
+## Encrypting
 
 ```php
 $encrypted = $client->encrypt($key, $plaintext);
@@ -88,7 +101,7 @@ You can also pass a context
 $encrypted = $client->encrypt($key, $plaintext, $context);
 ```
 
-### Decrypting
+## Decrypting
 
 ```php
 $plaintext = $client->decrypt($key, $cipherText,);
@@ -101,21 +114,21 @@ $plaintext = $client->decrypt($key, $cipherText, $context);
 ```
 
 
-## Testing
+# Testing
 
 ``` bash
 $ ./vendor/bin/phpunit
 ```
 
-## Contributing
+# Contributing
 
 Please see [CONTRIBUTING](CONTRIBUTING.md) and [CONDUCT](CONDUCT.md) for details.
 
-## Credits
+# Credits
 
 - [@timborder][link-author]
 
-## License
+# License
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
 
