@@ -1,5 +1,6 @@
 <?php
 
+use GuzzleHttp\Exception\ConnectException;
 use Psr\Log\NullLogger;
 use PHPUnit\Framework\TestCase;
 use Illuminate\Container\Container as Container;
@@ -26,7 +27,7 @@ class ThinTransitClientIntegrationTest extends TestCase
     /**
      * Get env variables. these are set in phpunit.xml or can be overridden on the CLI.
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -104,10 +105,11 @@ class ThinTransitClientIntegrationTest extends TestCase
      * @test
      * @group VaultEndToEnd
      * @group EndToEnd
-     * @expectedException \Kidfund\ThinTransportVaultClient\VaultException
      */
     public function it_handles_bad_url_gracefully()
     {
+        $this->expectException(\Kidfund\ThinTransportVaultClient\VaultException::class);
+
         // will return a response but empty
         $client = $this->getRealVaultClient(false, 'https://www.kidfund.us');
         $this->getEncryptResponse($this::VALID_STRING, $client);
@@ -117,10 +119,11 @@ class ThinTransitClientIntegrationTest extends TestCase
      * @test
      * @group VaultEndToEnd
      * @group EndToEnd
-     * @expectedException \GuzzleHttp\Exception\ConnectException
      */
     public function it_handles_bad_url_gracefully2()
     {
+        $this->expectException(ConnectException::class);
+        
         // should cause Guzzle exception
         $client = $this->getRealVaultClient(false, 'https://www.timbroder.com:8200');
         $this->getEncryptResponse($this::VALID_STRING, $client);
